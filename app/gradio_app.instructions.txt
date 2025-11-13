@@ -1,0 +1,4 @@
+1. Position your face inside the camera frame with good lighting.
+2. Press 'Start calibration' and hold a neutral mouth for 5 seconds.
+3. Select a phoneme and practice while watching the feedback.
+4. Record audio samples to compare the sound to the mouth shape.

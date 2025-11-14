@@ -47,7 +47,8 @@ def process_frame(
     session = session_store.get(session_id)
     session.target_phoneme = phoneme
     try:
-        metrics = vision_processor.process_frame(frame)
+        bgr_frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        metrics = vision_processor.process_frame(bgr_frame)
     except ValueError as err:
         return frame, f"{err}. Please align your face.", {}
 
@@ -92,7 +93,7 @@ def process_frame(
     else:
         feedback = "Start calibration to personalize feedback."
 
-    annotated = vision_processor.annotate_frame(frame, metrics, feedback)
+    annotated = vision_processor.annotate_frame(bgr_frame, metrics, feedback)
     annotated_rgb = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
     return annotated_rgb, feedback, metrics.to_dict()
 
@@ -148,7 +149,12 @@ def build_interface() -> gr.Blocks:
         )
 
         with gr.Row():
-            video_stream = gr.Video(source="webcam", streaming=True, label="Practice feed")
+            video_stream = gr.Image(
+                sources=["webcam"],
+                streaming=True,
+                label="Practice feed",
+                image_mode="RGB",
+            )
             annotated_view = gr.Image(label="Annotated feedback", type="numpy")
             audio_stream = gr.Audio(source="microphone", streaming=True, label="Audio stream")
 

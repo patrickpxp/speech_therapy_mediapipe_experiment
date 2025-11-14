@@ -12,15 +12,20 @@ This repository hosts a pre-MVP prototype that validates the speech therapy conc
 
 ## Getting Started
 
-1. Install dependencies:
+1. Create and activate a virtual environment with [uv](https://github.com/astral-sh/uv):
    ```bash
-   pip install -r requirements.txt
+   uv venv
+   source .venv/bin/activate
    ```
-2. Run the Gradio demo:
+2. Install dependencies:
+   ```bash
+   uv pip install -r requirements.txt
+   ```
+3. Run the Gradio demo:
    ```bash
    python -m app.gradio_interface
    ```
-3. Click **Start new session**, keep the calibration checkbox enabled, and hold a neutral mouth for the first few seconds to build the baseline. Once calibration finishes, practice the target phoneme and observe the feedback updates.
+4. Click **Start new session**, keep the calibration checkbox enabled, and hold a neutral mouth for the first few seconds to build the baseline. Once calibration finishes, practice the target phoneme and observe the feedback updates.
 
 > **Note**: This prototype favors readability over production hardening. It keeps state in memory and relies on webcam/microphone access provided by Gradio.
 

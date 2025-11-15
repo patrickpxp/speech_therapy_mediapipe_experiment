@@ -8,7 +8,7 @@ import cv2
 import gradio as gr
 import numpy as np
 
-from .audio import AudioPhonemeEstimator
+from .audio import AudioInput, AudioPhonemeEstimator
 from .calibration import CalibrationManager
 from .evaluation import PhonemeEvaluationEngine
 from .session import SessionStore
@@ -97,7 +97,7 @@ def process_frame(
     annotated_rgb = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
     return annotated_rgb, feedback, metrics.to_dict()
 
-def process_audio(audio: Tuple[int, np.ndarray], session_id: str, phoneme: str) -> Tuple[str, Dict[str, float]]:
+def process_audio(audio: AudioInput | None, session_id: str, phoneme: str) -> Tuple[str, Dict[str, float]]:
     if audio is None or session_id is None:
         return "Waiting for audio...", {}
 
@@ -109,9 +109,9 @@ def process_audio(audio: Tuple[int, np.ndarray], session_id: str, phoneme: str) 
     if target_score > 0.7:
         guidance = "Great sound!"
     elif target_score > 0.4:
-        guidance = "Almost there—focus on clarity."
+        guidance = "Almost there - focus on clarity."
     else:
-        guidance = "Let's try that sound again." 
+        guidance = "Let's try that sound again."
     message = f"{guidance} Target {phoneme}: {target_score:.2f}."
     return message, likelihoods
 
@@ -156,7 +156,12 @@ def build_interface() -> gr.Blocks:
                 image_mode="RGB",
             )
             annotated_view = gr.Image(label="Annotated feedback", type="numpy")
-            audio_stream = gr.Audio(source="microphone", streaming=True, label="Audio stream")
+            audio_stream = gr.Audio(
+                sources=["microphone"],
+                streaming=True,
+                type="filepath",
+                label="Audio stream",
+            )
 
         feedback_box = gr.Textbox(label="Visual feedback", interactive=False)
         audio_feedback_box = gr.Textbox(label="Audio feedback", interactive=False)
@@ -165,13 +170,13 @@ def build_interface() -> gr.Blocks:
 
         video_stream.stream(
             process_frame,
-            inputs=[session_id_state, phoneme_selector, calibrate_toggle],
+            inputs=[video_stream, session_id_state, phoneme_selector, calibrate_toggle],
             outputs=[annotated_view, feedback_box, metrics_display],
         )
 
         audio_stream.stream(
             process_audio,
-            inputs=[session_id_state, phoneme_selector],
+            inputs=[audio_stream, session_id_state, phoneme_selector],
             outputs=[audio_feedback_box, audio_display],
         )
 

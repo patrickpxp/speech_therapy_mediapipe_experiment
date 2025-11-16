@@ -1,4 +1,7 @@
 gradio==4.44.0
+# Pin huggingface_hub because gradio 4.44.0 still imports the deprecated
+# HfFolder helper that was removed in newer hub releases (>=0.24).
+huggingface_hub==0.23.2
 opencv-python==4.9.0.80
 mediapipe==0.10.14
 numpy==1.26.4
